@@ -12,36 +12,27 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 app.post('/notificar', async (req, res) => {
   const datos = req.body;
+
   let mensaje = "";
 
   // 🚨 Mensaje para visita simple al sitio
   if (datos.tipo === "visita") {
     mensaje = "👀 *Nuevo visitante ingresó al sitio*";
 
-  // 📊 Mensaje para cotización
+  // 📊 Mensaje para cotización (cuando presionan el botón "Cotizar")
   } else if (datos.tipo === "cotizacion") {
-    mensaje = `
+    mensaje = 
 📊 *Nueva cotización de SOAT:*
 🚗 *Placa:* ${datos.placa || 'No proporcionada'}
 📄 *Clase:* ${datos.clase || 'N/A'}
 📌 *Subtipo:* ${datos.subtipo || 'N/A'}
 🎂 *Edad vehículo:* ${datos.edad || 'N/A'}
 💰 *Valor estimado:* ${datos.valor || '$0'}
-`.trim();
-
-  // 🌐 Mensaje cuando se genera exitosamente una URL de PSE
-  } else if (datos.tipo === "url_ok") {
-    mensaje = `
-🌐 *Pago iniciado correctamente (PSE):*
-🚗 *Placa:* ${datos.placa || 'No proporcionada'}
-🏦 *Banco:* ${datos.banco || 'No especificado'}
-📧 *Correo:* ${datos.correo || 'N/A'}
-🔗 *URL:* ${datos.url || 'No disponible'}
-`.trim();
+.trim();
 
   // 📥 Mensaje completo al enviar el formulario
   } else {
-    mensaje = `
+    mensaje = 
 📥 *Nueva solicitud de SOAT*:
 🚗 *Placa:* ${datos.placa || 'No proporcionada'}
 💵 *Valor estimado:* ${datos.valor || '$0'}
@@ -62,11 +53,11 @@ app.post('/notificar', async (req, res) => {
 🧾 *Clase:* ${datos.clase || 'N/A'}
 📌 *Subtipo:* ${datos.subtipo || 'N/A'}
 🎂 *Edad vehículo:* ${datos.edad || 'N/A'}
-`.trim();
+.trim();
   }
 
   try {
-    await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    await axios.post(https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage, {
       chat_id: TELEGRAM_CHAT_ID,
       text: mensaje,
       parse_mode: "Markdown"
@@ -85,6 +76,5 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+  console.log(Servidor corriendo en el puerto ${PORT});
 });
-
