@@ -1,3 +1,15 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+const cors = require('cors');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
 app.post('/notificar', async (req, res) => {
   const datos = req.body;
   console.log("📩 Datos recibidos:", datos); // ← Para ver los datos en los logs
@@ -66,5 +78,15 @@ app.post('/notificar', async (req, res) => {
     console.error('❌ Error enviando a Telegram:', error.message);
     res.status(500).json({ ok: false, msg: 'Error enviando a Telegram' });
   }
+});
+
+// Ruta de prueba para verificar si el servidor está corriendo
+app.get('/', (req, res) => {
+  res.send('🟢 Servidor de notificación SOAT funcionando');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
 });
 
